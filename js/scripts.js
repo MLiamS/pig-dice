@@ -1,9 +1,10 @@
 // Back-End
-function Player(turn, comp) {
+var turnCounter = 1;
+
+function Player(name, comp) {
+  this.name = name;
   this.score = 0;
   this.tempScore = 0;
-  this.myTurn = turn;
-  this.win = false;
   this.isComp = comp;
 };
 
@@ -12,122 +13,105 @@ Player.prototype.roll = function() {
   if (roll > 1) {
     this.tempScore += roll;
     if (this.score + this.tempScore >= 100) {
-      this.win = true;
+      alert(this.name + " WON!!!!!");
+      newGame();
     };
     updateScoreBoard(roll);
   } else {
     this.tempScore = 0
     updateScoreBoard(roll);
-    return this.pass();
+    this.pass();
   };
 };
 
 Player.prototype.pass = function() {
   this.score += this.tempScore;
-  updateScoreBoard();
   this.tempScore = 0;
-  this.myTurn = false;
-  return true;
+  turnCounter ++;
+  updateScoreBoard();
 };
 
-Player.prototype.reset = function(turn, comp) {
+Player.prototype.reset = function(comp) {
   this.score = 0;
   this.tempScore = 0;
-  this.myTurn = turn;
-  this.win = false;
   this.isComp = comp;
 };
 
 Player.prototype.compTurn = function() {
-  var done;
-  while (this.myTurn) {
-    if (this.tempScore <= 15) {
-      done = this.roll();
+  var self = this;
+  var runInterval = setInterval(autoRun, 1000);
+  function autoRun() {
+    if (turnCounter % 2 === 0) {
+      if (self.tempScore <= 15) {
+        self.roll();
+      } else {
+        self.pass();
+      };
     } else {
-      done = this.pass();
-    }
-  }
-  return done;
-}
+      clearInterval(runInterval);
+    };
+  };
+};
 
-var player1 = new Player(true, false);
-var player2 = new Player(false, true);
-
-function rollDice() {
-  return Math.ceil(Math.random() * 6);
-}
+var player1 = new Player("player1", false);
+var player2 = new Player("player2", true);
 
 function updateScoreBoard(roll) {
   $("#player1Score").text(player1.score);
   $("#player2Score").text(player2.score);
   $("#rollTotal").text(player1.tempScore+player2.tempScore);
-  if (roll) {
+  if (roll >= 0) {
     $("#roll").text(roll);
   };
   turnIndicator();
 };
 
 function turnIndicator() {
-  if (player1.myTurn){
-    $("#p1").addClass("currentTurn");
-    $("#p2").removeClass("currentTurn");
-  } else if (player2.myTurn){
+  if (turnCounter % 2 === 0){
     $("#p2").addClass("currentTurn");
     $("#p1").removeClass("currentTurn");
+  } else {
+    $("#p1").addClass("currentTurn");
+    $("#p2").removeClass("currentTurn");
   };
+};
 
-}
+function checkComputerPlayer() {
+  if ((turnCounter % 2 === 0) && player2.isComp) {
+    player2.compTurn();
+  };
+};
+
+function newGame() {
+  player1.reset(false);
+  player2.reset(true);
+  updateScoreBoard(0);
+  turnCounter = 1;
+};
+
 
 // Front-End
 $(function() {
-
-  function newGame() {
-    player1.reset(true, false);
-    player2.reset(false, true);
-    updateScoreBoard();
-  };
 
   $("#buttonStart").click(function() {
     newGame();
   });
 
   $("#buttonRoll").click(function() {
-    if (player1.myTurn) {
-      player2.myTurn = player1.roll();
-      if (player1.win) {
-        alert("player1 Won")
-        newGame();
-      };
-      if (player2.myTurn && player2.isComp) {
-        player1.myTurn = player2.compTurn();
-        if (player2.win) {
-          alert("player2 Won")
-          newGame();
-        };
-        turnIndicator();
-      }
-    } else if (player2.myTurn) {
-      player1.myTurn = player2.roll();
-      if (player2.win) {
-        alert("player2 Won")
-        newGame();
-      };
+    if (turnCounter % 2 != 0) {
+      player1.roll();
+      checkComputerPlayer();
+    } else if (turnCounter % 2 === 0) {
+      player2.roll();
     };
   });
 
   $("#buttonPass").click(function() {
-    if (player1.myTurn) {
-      player2.myTurn = player1.pass();
-      if (player2.myTurn && player2.isComp) {
-        player1.myTurn = player2.compTurn();
-        if (player2.win) {
-          alert("player2 Won")
-          newGame();
-        };
-        turnIndicator();
-      }
-    } else if (player2.myTurn) {
-      player1.myTurn = player2.pass();
+    if (turnCounter % 2 != 0) {
+      player1.pass();
+      checkComputerPlayer();
+    } else if (turnCounter % 2 === 0) {
+      player2.pass();
     };
   });
 });
