@@ -8,8 +8,6 @@ function Player(turn) {
 
 Player.prototype.roll = function(roll) {
   if (this.myTurn) {
-
-    // var roll = 50;
     if (roll > 1) {
       this.tempScore += roll;
       if (this.score + this.tempScore >= 100) {
@@ -46,6 +44,13 @@ $(function() {
     $("#player2Score").text(player2.score);
     $("#rollTotal").text(player1.tempScore+player2.tempScore);
     $("#roll").text(roll);
+    if (player1.myTurn){
+      $("#p1").addClass("currentTurn");
+      $("#p2").removeClass("currentTurn");
+    } else {
+      $("#p2").addClass("currentTurn");
+      $("#p1").removeClass("currentTurn");
+    }
   };
 
   function newGame() {
