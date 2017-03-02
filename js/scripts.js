@@ -13,8 +13,8 @@ Player.prototype.roll = function() {
   if (roll > 1) {
     this.tempScore += roll;
     if (this.score + this.tempScore >= 100) {
+      this.pass();
       alert(this.name + " WON!!!!!");
-      newGame();
     };
     updateScoreBoard(roll);
   } else {
