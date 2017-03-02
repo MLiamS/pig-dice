@@ -53,8 +53,8 @@ Player.prototype.compTurn = function() {
   };
 };
 
-var player1 = new Player("player1", false);
-var player2 = new Player("player2", true);
+var player1 = new Player("Player 1", false);
+var player2 = new Player("Player 2", true);
 
 function updateScoreBoard(roll) {
   $("#player1Score").text(player1.score);
@@ -68,11 +68,11 @@ function updateScoreBoard(roll) {
 
 function turnIndicator() {
   if (turnCounter % 2 === 0){
-    $("#p2").addClass("currentTurn");
-    $("#p1").removeClass("currentTurn");
+    $("#p2").animate({backgroundColor: "#f7c165"}, 1000);
+    $("#p1").animate({backgroundColor: "rgb(245, 245, 245)"}, 1000);
   } else {
-    $("#p1").addClass("currentTurn");
-    $("#p2").removeClass("currentTurn");
+    $("#p1").animate({backgroundColor: "#f7c165"}, 1000);
+    $("#p2").animate({backgroundColor: "rgb(245, 245, 245)"}, 1000);
   };
 };
 
@@ -82,9 +82,9 @@ function checkComputerPlayer() {
   };
 };
 
-function newGame() {
+function newGame(p2) {
   player1.reset(false);
-  player2.reset(true);
+  player2.reset(p2);
   updateScoreBoard(0);
   turnCounter = 1;
 };
@@ -94,7 +94,12 @@ function newGame() {
 $(function() {
 
   $("#buttonStart").click(function() {
-    newGame();
+    var p2 = $("input:radio[name=p2]:checked").val();
+    if (p2 === "false") {
+      newGame(false);
+    } else {
+      newGame(true);
+    };
   });
 
   $("#buttonRoll").click(function() {

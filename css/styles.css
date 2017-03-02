@@ -1,3 +1,12 @@
-.currentTurn {
-  background-color: red;
+.btn {
+  display: block;
+  margin: auto;
+}
+
+.jumbotron h1 {
+  text-align: center;
+}
+
+#gameSelector {
+  text-align: center;
 }
